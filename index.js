@@ -1,5 +1,6 @@
 import { router } from './utils/router.js';
 import { createElement } from './utils/createElement.js';
+import { renderUsersScreen } from './components/UsersScreen.js';
 
 async function renderApp(route) {
     const root = document.getElementById('root');
@@ -7,11 +8,19 @@ async function renderApp(route) {
 
     const app = createElement('div', { className: 'app' });
 
-    const title = createElement('h1', {}, ['SPA App - Base Structure']);
-    app.appendChild(title);
-
-    const description = createElement('p', {}, ['Basic structure with routing and element creation utilities.']);
-    app.appendChild(description);
+    try {
+        if (route === 'users') {
+            const usersScreen = await renderUsersScreen();
+            app.appendChild(usersScreen);
+        } else {
+            const usersScreen = await renderUsersScreen();
+            app.appendChild(usersScreen);
+        }
+    } catch (error) {
+        console.error('Error rendering screen:', error);
+        const errorElement = createElement('div', { className: 'error' }, ['Error loading content']);
+        app.appendChild(errorElement);
+    }
 
     root.appendChild(app);
 }
