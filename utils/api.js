@@ -26,3 +26,27 @@ async function fetchWithCache(url, options = {}) {
 export async function getUsers() {
     return await fetchWithCache(`${BASE_URL}/users`);
 }
+
+export async function getUserTodos(userId) {
+    return await fetchWithCache(`${BASE_URL}/todos?userId=${userId}`);
+}
+
+export async function getTodos() {
+    return await fetchWithCache(`${BASE_URL}/todos`);
+}
+
+export async function getUserPosts(userId) {
+    return await fetchWithCache(`${BASE_URL}/posts?userId=${userId}`);
+}
+
+export async function getPosts() {
+    return await fetchWithCache(`${BASE_URL}/posts`);
+}
+
+export async function getPostComments(postId) {
+    return await fetchWithCache(`${BASE_URL}/comments?postId=${postId}`);
+}
+
+export async function getComments() {
+    return await fetchWithCache(`${BASE_URL}/comments`);
+}

@@ -98,3 +98,55 @@ h1 {
     display: flex;
     gap: 10px;
 }
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.todo-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.post-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.post-content {
+    flex: 1;
+}
+
+.post-content h3 {
+    margin-bottom: 10px;
+}
+
+.post-content p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.post-actions {
+    margin-left: 20px;
+}
+
+.comment-item h4 {
+    margin-bottom: 5px;
+}
+
+.comment-email {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.comment-body {
+    line-height: 1.5;
+}
