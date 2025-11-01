@@ -1,7 +1,7 @@
-import { createElement, createList } from '../utils/createElement.js';
+import { createElement, createList, createSearchInput } from '../utils/createElement.js';
 import { getComments } from '../utils/api.js';
 
-export async function renderCommentsScreen(postId) {
+export async function renderCommentsScreen(postId, searchQuery = '') {
     const container = createElement('div', { className: 'comments-screen' });
 
     const title = createElement('h1', {}, ['Comments']);
@@ -15,7 +15,22 @@ export async function renderCommentsScreen(postId) {
             comments = await getComments();
         }
 
-        const commentsList = createList(comments, renderCommentItem);
+        const filteredComments = comments.filter(comment =>
+            comment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            comment.body.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        const controlsContainer = createElement('div', { className: 'search-container' });
+
+        const searchInput = createSearchInput('Search by name or content...', (query) => {
+            renderCommentsScreen(postId, query);
+        });
+        searchInput.value = searchQuery;
+        controlsContainer.appendChild(searchInput);
+
+        container.appendChild(controlsContainer);
+
+        const commentsList = createList(filteredComments, renderCommentItem);
         container.appendChild(commentsList);
 
     } catch (error) {

@@ -50,3 +50,28 @@ export async function getPostComments(postId) {
 export async function getComments() {
     return await fetchWithCache(`${BASE_URL}/comments`);
 }
+
+export async function createUser(userData) {
+    const users = await getUsers();
+    const newUser = {
+        id: Math.max(...users.map(u => u.id)) + 1,
+        ...userData
+    };
+    return newUser;
+}
+
+export async function createTodo(todoData) {
+    try {
+        const response = await fetch(`${BASE_URL}/todos`, {
+            method: 'POST',
+            body: JSON.stringify(todoData),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating todo:', error);
+        throw error;
+    }
+}

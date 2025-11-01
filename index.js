@@ -5,6 +5,8 @@ import { renderTodosScreen } from './components/TodosScreen.js';
 import { renderPostsScreen } from './components/PostsScreen.js';
 import { renderCommentsScreen } from './components/CommentsScreen.js';
 
+let currentSearchQuery = '';
+
 async function renderApp(route, params = {}) {
     const root = document.getElementById('root');
     root.innerHTML = '';
@@ -16,18 +18,18 @@ async function renderApp(route, params = {}) {
 
     try {
         if (route === 'users') {
-            screenContent = await renderUsersScreen();
+            screenContent = await renderUsersScreen(currentSearchQuery);
         } else if (routeParams.action === 'todos') {
             const userId = params.userId || routeParams.userId;
-            screenContent = await renderTodosScreen(userId);
+            screenContent = await renderTodosScreen(userId, currentSearchQuery);
         } else if (routeParams.action === 'posts') {
             const userId = params.userId || routeParams.userId;
-            screenContent = await renderPostsScreen(userId);
+            screenContent = await renderPostsScreen(userId, currentSearchQuery);
         } else if (routeParams.subAction === 'comments') {
             const postId = params.postId || routeParams.postId;
-            screenContent = await renderCommentsScreen(postId);
+            screenContent = await renderCommentsScreen(postId, currentSearchQuery);
         } else {
-            screenContent = await renderUsersScreen();
+            screenContent = await renderUsersScreen(currentSearchQuery);
         }
     } catch (error) {
         console.error('Error rendering screen:', error);

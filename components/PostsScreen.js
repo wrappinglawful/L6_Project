@@ -1,7 +1,7 @@
-import { createElement, createList, createButton } from '../utils/createElement.js';
+import { createElement, createList, createButton, createSearchInput } from '../utils/createElement.js';
 import { getPosts } from '../utils/api.js';
 
-export async function renderPostsScreen(userId) {
+export async function renderPostsScreen(userId, searchQuery = '') {
     const container = createElement('div', { className: 'posts-screen' });
 
     const title = createElement('h1', {}, ['Posts']);
@@ -15,7 +15,22 @@ export async function renderPostsScreen(userId) {
             posts = await getPosts();
         }
 
-        const postsList = createList(posts, renderPostItem);
+        const filteredPosts = posts.filter(post =>
+            post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            post.body.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        const controlsContainer = createElement('div', { className: 'search-container' });
+
+        const searchInput = createSearchInput('Search by title or content...', (query) => {
+            renderPostsScreen(userId, query);
+        });
+        searchInput.value = searchQuery;
+        controlsContainer.appendChild(searchInput);
+
+        container.appendChild(controlsContainer);
+
+        const postsList = createList(filteredPosts, renderPostItem);
         container.appendChild(postsList);
 
     } catch (error) {
