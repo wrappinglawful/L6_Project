@@ -21,6 +21,39 @@ body {
     padding: 20px;
 }
 
+.breadcrumbs {
+    background-color: #fff;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.breadcrumbs ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumbs li {
+    margin-right: 10px;
+}
+
+.breadcrumbs li:not(:last-child)::after {
+    content: '>';
+    margin-left: 10px;
+    color: #666;
+}
+
+.breadcrumbs a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
 h1, h2, h3 {
     margin-bottom: 20px;
     color: #2c3e50;
@@ -261,4 +294,43 @@ h1 {
 
 .comment-body {
     line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .app {
+        padding: 10px;
+    }
+
+    .search-container {
+        flex-direction: column;
+    }
+
+    .breadcrumbs ul {
+        flex-wrap: wrap;
+    }
+
+    .breadcrumbs li {
+        margin-bottom: 5px;
+    }
+
+    .user-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .post-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .post-actions {
+        margin-left: 0;
+        margin-top: 10px;
+    }
 }

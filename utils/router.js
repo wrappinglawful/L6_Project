@@ -80,6 +80,39 @@ class Router {
     navigate(route) {
         window.location.hash = route;
     }
+
+    getRouteParams() {
+        const parts = this.currentRoute.split('#');
+        const params = {
+            screen: parts[0] || 'users'
+        };
+
+        if (parts.length > 1) {
+            if (parts[1].match(/^\d+$/)) {
+                params.userId = parts[1];
+                if (parts.length > 2) {
+                    params.action = parts[2];
+                    if (parts.length > 3) {
+                        if (parts[3].match(/^\d+$/)) {
+                            params.postId = parts[3];
+                            if (parts.length > 4) {
+                                params.subAction = parts[4];
+                            }
+                        } else {
+                            params.subAction = parts[3];
+                        }
+                    }
+                }
+            } else {
+                params.action = parts[1];
+                if (parts.length > 2) {
+                    params.subAction = parts[2];
+                }
+            }
+        }
+
+        return params;
+    }
 }
 
 export const router = new Router();

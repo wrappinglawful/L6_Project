@@ -1,5 +1,6 @@
 import { router } from './utils/router.js';
 import { createElement } from './utils/createElement.js';
+import { createBreadcrumbs } from './components/Breadcrumbs.js';
 import { renderUsersScreen } from './components/UsersScreen.js';
 import { renderTodosScreen } from './components/TodosScreen.js';
 import { renderPostsScreen } from './components/PostsScreen.js';
@@ -12,6 +13,9 @@ async function renderApp(route, params = {}) {
     root.innerHTML = '';
 
     const app = createElement('div', { className: 'app' });
+
+    const breadcrumbs = createBreadcrumbs(route);
+    app.appendChild(breadcrumbs);
 
     const routeParams = router.getRouteParams();
     let screenContent;
