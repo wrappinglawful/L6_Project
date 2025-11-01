@@ -1,8 +1,8 @@
-import { createElement, createList, createForm, createButton, createSearchInput } from '../utils/createElement.js';
+import { createElement, createList, createForm, createButton } from '../utils/createElement.js';
 import { getUsers } from '../utils/api.js';
 import { getStoredUsers, addStoredUser, removeStoredUser } from '../utils/storage.js';
 
-export async function renderUsersScreen(searchQuery = '') {
+export async function renderUsersScreen() {
     const container = createElement('div', { className: 'users-screen' });
 
     const title = createElement('h1', {}, ['Users']);
@@ -12,17 +12,37 @@ export async function renderUsersScreen(searchQuery = '') {
         const [apiUsers, storedUsers] = await Promise.all([getUsers(), getStoredUsers()]);
         const allUsers = [...apiUsers, ...storedUsers];
 
-        const filteredUsers = allUsers.filter(user =>
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-
         const controlsContainer = createElement('div', { className: 'search-container' });
 
-        const searchInput = createSearchInput('Search by name or email...', (query) => {
-            renderUsersScreen(query);
+        const searchInput = createElement('input', {
+            type: 'text',
+            className: 'search-input',
+            placeholder: 'Search by name or email...'
         });
-        searchInput.value = searchQuery;
+
+        let currentSearchQuery = '';
+
+        const updateDisplay = () => {
+            const filteredUsers = allUsers.filter(user =>
+                user.name.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(currentSearchQuery.toLowerCase())
+            );
+
+            const existingList = container.querySelector('.users-list');
+            if (existingList) {
+                container.removeChild(existingList);
+            }
+
+            const usersList = createList(filteredUsers, renderUserItem);
+            usersList.classList.add('users-list');
+            container.appendChild(usersList);
+        };
+
+        searchInput.oninput = (e) => {
+            currentSearchQuery = e.target.value;
+            updateDisplay();
+        };
+
         controlsContainer.appendChild(searchInput);
 
         const addButton = createButton('Add User', () => showAddUserForm());
@@ -30,7 +50,27 @@ export async function renderUsersScreen(searchQuery = '') {
 
         container.appendChild(controlsContainer);
 
-        const usersList = createList(filteredUsers, renderUserItem);
+        const navigationContainer = createElement('div', { className: 'navigation-container' });
+
+        const todosButton = createButton('View All Todos', () => {
+            window.location.hash = 'users#todos';
+        }, 'btn btn-primary');
+        navigationContainer.appendChild(todosButton);
+
+        const postsButton = createButton('View All Posts', () => {
+            window.location.hash = 'users#posts';
+        }, 'btn btn-primary');
+        navigationContainer.appendChild(postsButton);
+
+        const commentsButton = createButton('View All Comments', () => {
+            window.location.hash = 'users#posts#comments';
+        }, 'btn btn-primary');
+        navigationContainer.appendChild(commentsButton);
+
+        container.appendChild(navigationContainer);
+
+        const usersList = createList(allUsers, renderUserItem);
+        usersList.classList.add('users-list');
         container.appendChild(usersList);
 
     } catch (error) {

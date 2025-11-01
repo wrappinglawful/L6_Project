@@ -43,9 +43,16 @@ export function createForm(fields, onSubmit, submitText = 'Submit') {
             e.preventDefault();
             const formData = new FormData(e.target);
             const data = {};
-            for (let [key, value] of formData.entries()) {
-                data[key] = value;
-            }
+
+            fields.forEach(field => {
+                if (field.type === 'checkbox') {
+                    const checkbox = e.target.querySelector(`[name="${field.name}"]`);
+                    data[field.name] = checkbox ? checkbox.checked : false;
+                } else {
+                    data[field.name] = formData.get(field.name) || '';
+                }
+            });
+
             onSubmit(data);
         }
     });
@@ -53,26 +60,47 @@ export function createForm(fields, onSubmit, submitText = 'Submit') {
     fields.forEach(field => {
         const fieldGroup = createElement('div', { className: 'form-group' });
 
-        const label = createElement('label', {}, [field.label]);
-        fieldGroup.appendChild(label);
+        if (field.type === 'checkbox') {
+            const checkboxId = `checkbox-${field.name}-${Date.now()}`;
 
-        let input;
-        if (field.type === 'textarea') {
-            input = createElement('textarea', {
+            const checkbox = createElement('input', {
+                type: 'checkbox',
                 name: field.name,
-                placeholder: field.placeholder || '',
-                required: field.required || false
+                checked: field.checked || false,
+                className: 'checkbox-input',
+                id: checkboxId
             });
+
+            const label = createElement('label', {
+                className: 'checkbox-label',
+                for: checkboxId
+            }, [field.label]);
+
+            fieldGroup.appendChild(checkbox);
+            fieldGroup.appendChild(label);
         } else {
-            input = createElement('input', {
-                type: field.type || 'text',
-                name: field.name,
-                placeholder: field.placeholder || '',
-                required: field.required || false
-            });
+            const label = createElement('label', {}, [field.label]);
+            fieldGroup.appendChild(label);
+
+            let input;
+            if (field.type === 'textarea') {
+                input = createElement('textarea', {
+                    name: field.name,
+                    placeholder: field.placeholder || '',
+                    required: field.required || false
+                });
+            } else {
+                input = createElement('input', {
+                    type: field.type || 'text',
+                    name: field.name,
+                    placeholder: field.placeholder || '',
+                    required: field.required || false
+                });
+            }
+
+            fieldGroup.appendChild(input);
         }
 
-        fieldGroup.appendChild(input);
         form.appendChild(fieldGroup);
     });
 

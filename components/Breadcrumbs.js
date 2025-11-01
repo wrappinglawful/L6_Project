@@ -4,33 +4,30 @@ function generateNavigationChain(route) {
     const parts = route.split('#');
     const chain = [];
 
+    if (route === 'users') {
+        return chain;
+    }
+
     if (parts[0] === 'users') {
         chain.push({ name: 'Users', route: '#users' });
 
-        if (parts.length > 1) {
-            if (parts[1].match(/^\d+$/)) {
-                const userId = parts[1];
-                if (parts.length > 2) {
-                    if (parts[2] === 'todos') {
-                        chain.push({ name: 'Todos', route: `#users#${userId}#todos` });
-                    } else if (parts[2] === 'posts') {
-                        chain.push({ name: 'Posts', route: `#users#${userId}#posts` });
-                        if (parts.length > 3 && parts[3].match(/^\d+$/)) {
-                            const postId = parts[3];
-                            if (parts.length > 4 && parts[4] === 'comments') {
-                                chain.push({ name: 'Comments', route: `#users#${userId}#posts#${postId}#comments` });
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (parts[1] === 'todos') {
-                    chain.push({ name: 'Todos', route: '#users#todos' });
-                } else if (parts[1] === 'posts') {
-                    chain.push({ name: 'Posts', route: '#users#posts' });
-                    if (parts.length > 2 && parts[2] === 'comments') {
-                        chain.push({ name: 'Comments', route: '#users#posts#comments' });
-                    }
+        if (parts.length === 2) {
+            if (parts[1] === 'todos') {
+                chain.push({ name: 'All Todos', route: '#users#todos' });
+            } else if (parts[1] === 'posts') {
+                chain.push({ name: 'All Posts', route: '#users#posts' });
+            }
+        } else if (parts.length === 3 && parts[2] === 'comments') {
+            chain.push({ name: 'All Posts', route: '#users#posts' });
+            chain.push({ name: 'All Comments', route: '#users#posts#comments' });
+        } else if (parts.length >= 3 && parts[1].match(/^\d+$/)) {
+            const userId = parts[1];
+            if (parts[2] === 'todos') {
+                chain.push({ name: 'Todos', route: `#users#${userId}#todos` });
+            } else if (parts[2] === 'posts') {
+                chain.push({ name: 'Posts', route: `#users#${userId}#posts` });
+                if (parts.length >= 5 && parts[4] === 'comments') {
+                    chain.push({ name: 'Comments', route: `#users#${userId}#posts#${parts[3]}#comments` });
                 }
             }
         }
@@ -41,6 +38,10 @@ function generateNavigationChain(route) {
 
 export function createBreadcrumbs(currentRoute) {
     const chain = generateNavigationChain(currentRoute);
+
+    if (chain.length === 0) {
+        return null;
+    }
 
     const breadcrumbsList = createElement('ul');
 

@@ -1,36 +1,57 @@
-import { createElement, createList, createSearchInput } from '../utils/createElement.js';
+import { createElement, createList } from '../utils/createElement.js';
 import { getComments } from '../utils/api.js';
 
-export async function renderCommentsScreen(postId, searchQuery = '') {
+export async function renderCommentsScreen(postId) {
     const container = createElement('div', { className: 'comments-screen' });
 
     const title = createElement('h1', {}, ['Comments']);
     container.appendChild(title);
 
     try {
-        let comments;
+        let allComments;
         if (postId) {
-            comments = await getComments().then(allComments => allComments.filter(comment => comment.postId == postId));
+            allComments = await getComments().then(comments => comments.filter(comment => comment.postId == postId));
         } else {
-            comments = await getComments();
+            allComments = await getComments();
         }
-
-        const filteredComments = comments.filter(comment =>
-            comment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            comment.body.toLowerCase().includes(searchQuery.toLowerCase())
-        );
 
         const controlsContainer = createElement('div', { className: 'search-container' });
 
-        const searchInput = createSearchInput('Search by name or content...', (query) => {
-            renderCommentsScreen(postId, query);
+        const searchInput = createElement('input', {
+            type: 'text',
+            className: 'search-input',
+            placeholder: 'Search by name or content...'
         });
-        searchInput.value = searchQuery;
+
+        let currentSearchQuery = '';
+
+        const updateDisplay = () => {
+            const filteredComments = allComments.filter(comment =>
+                comment.name.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                comment.body.toLowerCase().includes(currentSearchQuery.toLowerCase())
+            );
+
+            const existingList = container.querySelector('.comments-list');
+            if (existingList) {
+                container.removeChild(existingList);
+            }
+
+            const commentsList = createList(filteredComments, renderCommentItem);
+            commentsList.classList.add('comments-list');
+            container.appendChild(commentsList);
+        };
+
+        searchInput.oninput = (e) => {
+            currentSearchQuery = e.target.value;
+            updateDisplay();
+        };
+
         controlsContainer.appendChild(searchInput);
 
         container.appendChild(controlsContainer);
 
-        const commentsList = createList(filteredComments, renderCommentItem);
+        const commentsList = createList(allComments, renderCommentItem);
+        commentsList.classList.add('comments-list');
         container.appendChild(commentsList);
 
     } catch (error) {

@@ -244,6 +244,38 @@ h1 {
     gap: 10px;
 }
 
+.navigation-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.checkbox-input {
+    width: auto !important;
+    margin: 0 8px 0 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.checkbox-label {
+    display: inline !important;
+    cursor: pointer !important;
+    vertical-align: middle !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.form-group:has(.checkbox-input) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    margin-bottom: 15px !important;
+    padding: 0 !important;
+}
+
 .todo-item {
     display: flex;
     align-items: center;

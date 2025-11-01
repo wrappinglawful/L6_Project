@@ -6,8 +6,6 @@ import { renderTodosScreen } from './components/TodosScreen.js';
 import { renderPostsScreen } from './components/PostsScreen.js';
 import { renderCommentsScreen } from './components/CommentsScreen.js';
 
-let currentSearchQuery = '';
-
 async function renderApp(route, params = {}) {
     const root = document.getElementById('root');
     root.innerHTML = '';
@@ -15,25 +13,34 @@ async function renderApp(route, params = {}) {
     const app = createElement('div', { className: 'app' });
 
     const breadcrumbs = createBreadcrumbs(route);
-    app.appendChild(breadcrumbs);
+    if (breadcrumbs) {
+        app.appendChild(breadcrumbs);
+    }
 
-    const routeParams = router.getRouteParams();
     let screenContent;
 
     try {
         if (route === 'users') {
-            screenContent = await renderUsersScreen(currentSearchQuery);
-        } else if (routeParams.action === 'todos') {
-            const userId = params.userId || routeParams.userId;
-            screenContent = await renderTodosScreen(userId, currentSearchQuery);
-        } else if (routeParams.action === 'posts') {
-            const userId = params.userId || routeParams.userId;
-            screenContent = await renderPostsScreen(userId, currentSearchQuery);
-        } else if (routeParams.subAction === 'comments') {
-            const postId = params.postId || routeParams.postId;
-            screenContent = await renderCommentsScreen(postId, currentSearchQuery);
+            screenContent = await renderUsersScreen();
+        } else if (route === 'users#todos') {
+            screenContent = await renderTodosScreen();
+        } else if (route === 'users#posts') {
+            screenContent = await renderPostsScreen();
+        } else if (route === 'users#posts#comments') {
+            screenContent = await renderCommentsScreen();
+        } else if (params.userId && params.postId) {
+            screenContent = await renderCommentsScreen(params.postId);
+        } else if (params.userId) {
+            const routeParts = route.split('#');
+            if (routeParts[2] === 'todos') {
+                screenContent = await renderTodosScreen(params.userId);
+            } else if (routeParts[2] === 'posts') {
+                screenContent = await renderPostsScreen(params.userId);
+            } else {
+                screenContent = await renderUsersScreen();
+            }
         } else {
-            screenContent = await renderUsersScreen(currentSearchQuery);
+            screenContent = await renderUsersScreen();
         }
     } catch (error) {
         console.error('Error rendering screen:', error);
@@ -45,6 +52,9 @@ async function renderApp(route, params = {}) {
 }
 
 router.addRoute('users', renderApp);
+router.addRoute('users#todos', renderApp);
+router.addRoute('users#posts', renderApp);
+router.addRoute('users#posts#comments', renderApp);
 
 router.addRouteHandler('users#:userId#todos', (route, params) => {
     renderApp(route, params);
@@ -59,5 +69,10 @@ router.addRouteHandler('users#:userId#posts#:postId#comments', (route, params) =
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    router.init();
+    const currentHash = window.location.hash;
+    if (!currentHash || currentHash === '#/' || currentHash.includes('index.html')) {
+        window.location.hash = 'users';
+    } else {
+        router.init();
+    }
 });

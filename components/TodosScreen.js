@@ -1,30 +1,50 @@
-import { createElement, createList, createForm, createButton, createSearchInput } from '../utils/createElement.js';
+import { createElement, createList, createForm, createButton } from '../utils/createElement.js';
 import { getTodos, createTodo } from '../utils/api.js';
 
-export async function renderTodosScreen(userId, searchQuery = '') {
+export async function renderTodosScreen(userId) {
     const container = createElement('div', { className: 'todos-screen' });
 
     const title = createElement('h1', {}, ['Todos']);
     container.appendChild(title);
 
     try {
-        let todos;
+        let allTodos;
         if (userId) {
-            todos = await getTodos().then(allTodos => allTodos.filter(todo => todo.userId == userId));
+            allTodos = await getTodos().then(todos => todos.filter(todo => todo.userId == userId));
         } else {
-            todos = await getTodos();
+            allTodos = await getTodos();
         }
-
-        const filteredTodos = todos.filter(todo =>
-            todo.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
 
         const controlsContainer = createElement('div', { className: 'search-container' });
 
-        const searchInput = createSearchInput('Search by title...', (query) => {
-            renderTodosScreen(userId, query);
+        const searchInput = createElement('input', {
+            type: 'text',
+            className: 'search-input',
+            placeholder: 'Search by title...'
         });
-        searchInput.value = searchQuery;
+
+        let currentSearchQuery = '';
+
+        const updateDisplay = () => {
+            const filteredTodos = allTodos.filter(todo =>
+                todo.title.toLowerCase().includes(currentSearchQuery.toLowerCase())
+            );
+
+            const existingList = container.querySelector('.todos-list');
+            if (existingList) {
+                container.removeChild(existingList);
+            }
+
+            const todosList = createList(filteredTodos, renderTodoItem);
+            todosList.classList.add('todos-list');
+            container.appendChild(todosList);
+        };
+
+        searchInput.oninput = (e) => {
+            currentSearchQuery = e.target.value;
+            updateDisplay();
+        };
+
         controlsContainer.appendChild(searchInput);
 
         if (userId) {
@@ -34,7 +54,8 @@ export async function renderTodosScreen(userId, searchQuery = '') {
 
         container.appendChild(controlsContainer);
 
-        const todosList = createList(filteredTodos, renderTodoItem);
+        const todosList = createList(allTodos, renderTodoItem);
+        todosList.classList.add('todos-list');
         container.appendChild(todosList);
 
     } catch (error) {
@@ -82,7 +103,7 @@ function showAddTodoForm(userId) {
         try {
             await createTodo({
                 title: formData.title,
-                completed: formData.completed === 'on',
+                completed: formData.completed,
                 userId: parseInt(userId)
             });
             document.body.removeChild(modal);
