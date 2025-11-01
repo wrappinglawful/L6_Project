@@ -3,11 +3,9 @@ class Router {
         this.routes = {};
         this.currentRoute = '';
         this.routeHandlers = {};
-        this.init();
     }
 
     init() {
-        this.handleRoute();
         window.addEventListener('hashchange', () => {
             this.handleRoute();
         });
@@ -43,6 +41,23 @@ class Router {
         }
 
         window.location.hash = 'users';
+    }
+
+    handleRouteDirect(route) {
+        this.currentRoute = route;
+
+        if (this.routes[route]) {
+            this.routes[route](route);
+            return;
+        }
+
+        for (const pattern in this.routeHandlers) {
+            if (this.matchRoutePattern(route, pattern)) {
+                const params = this.extractRouteParams(route, pattern);
+                this.routeHandlers[pattern](route, params);
+                return;
+            }
+        }
     }
 
     matchRoutePattern(route, pattern) {

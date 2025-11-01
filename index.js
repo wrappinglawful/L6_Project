@@ -71,8 +71,10 @@ router.addRouteHandler('users#:userId#posts#:postId#comments', (route, params) =
 document.addEventListener('DOMContentLoaded', () => {
     const currentHash = window.location.hash;
     if (!currentHash || currentHash === '#/' || currentHash.includes('index.html')) {
-        window.location.hash = 'users';
+        history.replaceState(null, null, '#users');
+        router.handleRouteDirect('users');
     } else {
-        router.init();
+        router.handleRouteDirect(currentHash.slice(1));
     }
+    router.init();
 });

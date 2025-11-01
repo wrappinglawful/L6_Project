@@ -12,15 +12,18 @@ function generateNavigationChain(route) {
         chain.push({ name: 'Users', route: '#users' });
 
         if (parts.length === 2) {
+            // Общие экраны: users#todos, users#posts
             if (parts[1] === 'todos') {
                 chain.push({ name: 'All Todos', route: '#users#todos' });
             } else if (parts[1] === 'posts') {
                 chain.push({ name: 'All Posts', route: '#users#posts' });
             }
         } else if (parts.length === 3 && parts[2] === 'comments') {
+            // users#posts#comments
             chain.push({ name: 'All Posts', route: '#users#posts' });
             chain.push({ name: 'All Comments', route: '#users#posts#comments' });
         } else if (parts.length >= 3 && parts[1].match(/^\d+$/)) {
+            // Маршруты с userId: users#1#todos, users#1#posts
             const userId = parts[1];
             if (parts[2] === 'todos') {
                 chain.push({ name: 'Todos', route: `#users#${userId}#todos` });

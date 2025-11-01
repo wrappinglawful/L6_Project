@@ -50,6 +50,7 @@ export async function renderUsersScreen() {
 
         container.appendChild(controlsContainer);
 
+        // Навигация к общим экранам
         const navigationContainer = createElement('div', { className: 'navigation-container' });
 
         const todosButton = createButton('View All Todos', () => {
