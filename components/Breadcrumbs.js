@@ -26,8 +26,9 @@ function generateNavigationChain(route) {
                 chain.push({ name: 'Todos', route: `#users#${userId}#todos` });
             } else if (parts[2] === 'posts') {
                 chain.push({ name: 'Posts', route: `#users#${userId}#posts` });
-                if (parts.length >= 5 && parts[4] === 'comments') {
-                    chain.push({ name: 'Comments', route: `#users#${userId}#posts#${parts[3]}#comments` });
+                if (parts.length >= 4 && parts[3].match(/^\d+$/) && parts.length >= 5 && parts[4] === 'comments') {
+                    const postId = parts[3];
+                    chain.push({ name: 'Comments', route: `#users#${userId}#posts#${postId}#comments` });
                 }
             }
         }

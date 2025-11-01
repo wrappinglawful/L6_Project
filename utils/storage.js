@@ -36,3 +36,8 @@ export function removeStoredUser(userId) {
     saveStoredUsers(filteredUsers);
     return filteredUsers;
 }
+
+export function getStoredUser(userId) {
+    const users = getStoredUsers();
+    return users.find(user => user.id === userId);
+}
